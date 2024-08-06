@@ -1,0 +1,37 @@
+<mxfile host="app.diagrams.net" modified="2024-08-06T22:53:11.127Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" etag="td0G9g3thqC4xfjMHAyn" version="24.6.5" type="device">
+  <diagram name="Page-1" id="0VxXGWCpSxAx2sepz6Tk">
+    <mxGraphModel dx="925" dy="517" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="IvMVAxKpknmPtntFIxs1-5" value="&lt;div style=&quot;text-align: left;&quot;&gt;Config&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- threshold listening value (db)&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- max listening duration (s)&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- talking speed&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- verbosity&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- memory length (exchanges)&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="IvMVAxKpknmPtntFIxs1-6" value="HeadController&lt;div&gt;- audio_capture&lt;br&gt;&lt;/div&gt;&lt;div&gt;- speech_to_text&lt;br&gt;&lt;/div&gt;&lt;div&gt;- text_processor&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- text_to_speech&lt;/span&gt;&lt;/div&gt;&lt;div&gt;update():&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="319" y="90" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="IvMVAxKpknmPtntFIxs1-7" value="AudioCapture" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="360" y="200" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="IvMVAxKpknmPtntFIxs1-8" value="SpeechToText" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="360" y="240" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="IvMVAxKpknmPtntFIxs1-9" value="TextProcessor" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="360" y="280" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="IvMVAxKpknmPtntFIxs1-10" value="TextToSpeech" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="360" y="320" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="IvMVAxKpknmPtntFIxs1-11" value="EventManager&lt;div&gt;-listeners&lt;/div&gt;&lt;div&gt;add_listener():&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;given function will be run when event&lt;br&gt;&lt;/div&gt;&lt;div&gt;trigger_event():&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;run all listener functions with given data&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="IvMVAxKpknmPtntFIxs1-13" value="utilities&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;calculate_audio_level():&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="IvMVAxKpknmPtntFIxs1-14" value="main():&lt;div&gt;while True: controller.update()&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="250" y="40" width="190" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
