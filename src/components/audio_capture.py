@@ -6,7 +6,7 @@ import time
 
 class AudioCapture:
     def __init__(self):
-        self.threshold = 1000
+        self.threshold = 800
         self.chunk_size = 1024
         self.sample_rate = 44100
         self.p = pyaudio.PyAudio()
@@ -19,10 +19,10 @@ class AudioCapture:
         self.is_recording = False
         self.frames = []
         self.audio_data = None
-        self.silence_timeout = 1.0  # 1 second of silence to stop recording
+        self.silence_timeout = 2.0  # 1 second of silence to stop recording
         self.last_sound_time = 0
         self.recording_start_time = 0
-        self.min_duration = 2.0  # Minimum recording duration in seconds
+        self.min_duration = 2  # Minimum recording duration in seconds
         self.max_duration = 10.0  # Maximum recording duration in seconds
 
     # this controls how the audio thread captures audio data, starts recording at threshold volume, cuts recording at either max time or silence
