@@ -1,3 +1,5 @@
+from ..components import AudioCapture, SpeechToText, TextProcessor, TextToSpeech
+
 class HeadController:
     def __init__(self):
         self.audio_capture = AudioCapture()
@@ -6,5 +8,12 @@ class HeadController:
         self.text_to_speech = TextToSpeech()
 
     def update(self):
-        # Main loop logic
-        pass
+        audio_data = self.audio_capture.update()
+        if audio_data:
+            text = self.speech_to_text.convert(audio_data)
+            if text:
+                print(f"Recognized: {text}")
+                response = self.text_processor.process(text)
+                if response:
+                    print(f"Response: {response}")
+                    self.text_to_speech.convert(response)
