@@ -1,3 +1,4 @@
+__pycache__/
 .env
 google_speech_service.json
 docs/talking_head_overview.drawio
