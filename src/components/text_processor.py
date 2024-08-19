@@ -6,9 +6,9 @@ class TextProcessor:
     def __init__(self):
         load_dotenv()  # Load API key from .env file
         self.client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        # self.system_prompt = """You are a head shaped like a tree in the forest at night. 
-        # Respond to passers-by with a sage tone. Keep your responses vague and cryptic. Do not use asterisks "*"."""
-        self.system_prompt = """You are helpful. You are here to assist users with their questions."""
+        self.system_prompt = """You are a head shaped like a tree in the forest at night. 
+        Respond to passers-by with a sage tone. Keep your responses vague and cryptic."""
+        # self.system_prompt = """You are helpful. You are here to assist users with their questions."""
 
     def process(self, text):
         try:
