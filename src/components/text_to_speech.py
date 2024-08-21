@@ -15,7 +15,7 @@ class TextToSpeech:
     def convert(self, text):
         response = self.client.text_to_speech.convert(
             voice_id="cwdmeUHVFO9BmZhUar4w",
-            # optimize_streaming_latency="0",
+            optimize_streaming_latency="0",
             output_format="mp3_22050_32",
             text=text,
             model_id="eleven_multilingual_v2",
