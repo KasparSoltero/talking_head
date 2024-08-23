@@ -1,4 +1,5 @@
 from ..config import Config
+from .speech_to_text import SpeechToText
 
 import pyaudio
 import numpy as np
@@ -24,6 +25,9 @@ class AudioCapture:
         self.recording_start_time = 0
         self.min_duration = 2  # Minimum recording duration in seconds
         self.max_duration = 10.0  # Maximum recording duration in seconds
+
+        self.speech_to_text = SpeechToText()
+        self.text_history = ''
 
     # this controls how the audio thread captures audio data, starts recording at threshold volume, cuts recording at either max time or silence
     def audio_callback(self, in_data, frame_count, time_info, status):
@@ -61,16 +65,24 @@ class AudioCapture:
         if duration >= self.min_duration:
             if self.frames:
                 self.audio_data = np.concatenate(self.frames)
+                print(f"Recording duration: {duration:.2f}s, getting text...")
+                text = self.speech_to_text.convert(self.audio_data.tobytes())
+                print(f"Recognized: {text}")
+                if self.text_history is not '':
+                    self.text_history += ', '+text
+                elif text:
+                    self.text_history = text
+
         else:
             print(f"({duration:.2f}s) is too short, discarding")
             self.audio_data = None
         self.frames = []
 
     def update(self):
-        if self.audio_data is not None:
-            data = self.audio_data
-            self.audio_data = None
-            return data.tobytes()
+        if self.text_history is not '':
+            data = self.text_history
+            self.text_history = ''
+            return data
         return None
 
     def __del__(self):

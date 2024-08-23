@@ -1,9 +1,6 @@
 pyaudio
 pygame
 numpy
-time
-os
 anthropic
-google.cloud speech
-google.cloud texttospeech
-dotenv load_dotenv
+google-cloud-speech
+dotenv
