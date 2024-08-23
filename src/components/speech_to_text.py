@@ -11,7 +11,7 @@ class SpeechToText:
             sample_rate_hertz=44100,
             language_code="en-US",
         )
-
+# hello
     def convert(self, audio_data):
         # Configure the audio settings
         audio = speech.RecognitionAudio(content=audio_data)
