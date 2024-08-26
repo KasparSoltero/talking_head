@@ -1,6 +1,7 @@
 ## Requirements
 
 - Portaudio
+  - `brew install portaudio`
 
 to run:
 
