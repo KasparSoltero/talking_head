@@ -1,4 +1,9 @@
+## Requirements
+
+- Portaudio
+
 to run:
+
 ```
 python -m src.main
 ```
