@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "talking-head"
+version = "0.1.0"
+description = ""
+authors = ["Edward <edeetee@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+PyAudio = "^0.2.14"
+pygame = "^2.6.0"
+numpy = "^2.1.0"
+anthropic = "^0.34.1"
+google-cloud-speech = "^2.27.0"
+dotenv = "^0.0.5"
+py-audio2face = {extras = ["streaming"], version = "^0.1.3"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
