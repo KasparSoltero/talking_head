@@ -8,10 +8,13 @@ from elevenlabs.client import ElevenLabs
 
 from google.cloud import texttospeech
 
+
 class TextToSpeech:
     def __init__(self):
         load_dotenv()
-        self.client = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
+        elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
+        print(f"ElevenLabs API Key: {elevenlabs_api_key}")
+        self.client = ElevenLabs(api_key=elevenlabs_api_key)
 
         ## google tts init
         # self.client = texttospeech.TextToSpeechClient()
@@ -41,7 +44,7 @@ class TextToSpeech:
                 use_speaker_boost=True,
             ),
         )
-        
+
         audio_data = io.BytesIO()
         # Write the audio data to the BytesIO object
         for chunk in response:
@@ -50,11 +53,7 @@ class TextToSpeech:
         # Seek to the beginning of the BytesIO object
         audio_data.seek(0)
 
-        # Load the audio data into a Sound object
-        sound = pygame.mixer.Sound(audio_data)
-        channel = sound.play()
-        while channel.get_busy():
-            pygame.time.Clock().tick(10)
+        return audio_data
 
     def convert_google_tts(self, text):
         ssml_text = f"""
@@ -77,9 +76,7 @@ class TextToSpeech:
         synthesis_input = texttospeech.SynthesisInput(ssml=ssml_text)
 
         response = self.client.synthesize_speech(
-            input=synthesis_input,
-            voice=self.voice,
-            audio_config=self.audio_config
+            input=synthesis_input, voice=self.voice, audio_config=self.audio_config
         )
 
         # Save the audio content to a file
