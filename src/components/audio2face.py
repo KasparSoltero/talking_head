@@ -1,7 +1,15 @@
+from io import BytesIO
 import time
+from typing import Generator
 import grpc
 import py_audio2face as pya2f
 import numpy as np
+
+from src.components import audio2face_pb2, audio2face_pb2_grpc
+
+
+# PORT = 12031
+PORT = 50051
 
 
 class Audio2FaceController:
@@ -9,21 +17,41 @@ class Audio2FaceController:
 
     def __init__(self):
         pass
-        # self.a2f = pya2f.Audio2Face()
+        self.a2f = pya2f.Audio2Face(f"localhost:{PORT}")
         # self.a2f.init_a2f()
 
-    def process_audio_stream(self, audio_data: np.array):
-        # self.a2f.init_a2f()
-        # self.a2f.stream_audio(audio_data, fps=60)
+    def play_animation_from_audio(self, audio_data: BytesIO):
+        # self.play_animation_from_audio_stream([audio_data])
+        bytes = audio_data.getvalue()
         push_audio_track(
             "localhost:50051",
-            audio_data,
+            bytes,
             44100,
-            "/World/audio2face/receive_audio_stream",
+            # "/World/audio2face/receive_audio_stream",
+            "/World/audio2face/PlayerStreaming",
         )
 
+    def play_animation_from_audio_stream(
+        self, audio_stream: Generator[np.ndarray | bytes, None, None]
+    ):
+        # self.a2f.init_a2f()
+        push_audio_track_stream(
+            "localhost:50051",
+            audio_stream,
+            44100,
+            # "/World/audio2face/receive_audio_stream",
+            "/World/audio2face/PlayerStreaming",
+        )
+        # self.a2f.stream_audio(audio_data, 44100)
+        # # push_audio_track(
+        # #     "localhost:50051",
+        # #     audio_data,
+        # #     44100,
+        # #     "/World/audio2face/receive_audio_stream",
+        # # )
 
-def push_audio_track(url, audio_data, samplerate, instance_name):
+
+def push_audio_track(url, audio_data: bytes, samplerate, instance_name):
     """
     This function pushes the whole audio track at once via PushAudioRequest()
     PushAudioRequest parameters:
@@ -34,11 +62,11 @@ def push_audio_track(url, audio_data, samplerate, instance_name):
     The request is passed to PushAudio()
     """
 
-    block_until_playback_is_finished = True  # ADJUST
+    block_until_playback_is_finished = False  # ADJUST
     with grpc.insecure_channel(url) as channel:
-        stub = pya2f.Audio2FaceStub(channel)
-        request = pya2f.PushAudioRequest()
-        request.audio_data = audio_data.astype(np.float32).tobytes()
+        stub = audio2face_pb2_grpc.Audio2FaceStub(channel)
+        request = audio2face_pb2.PushAudioRequest()
+        request.audio_data = audio_data
         request.samplerate = samplerate
         request.instance_name = instance_name
         request.block_until_playback_is_finished = block_until_playback_is_finished
@@ -71,21 +99,21 @@ def push_audio_track_stream(url, audio_data, samplerate, instance_name):
 
     with grpc.insecure_channel(url) as channel:
         print("Channel creadted")
-        stub = pya2f.Audio2FaceStub(channel)
+        stub = audio2face_pb2_grpc.Audio2FaceStub(channel)
 
         def make_generator():
-            start_marker = pya2f.PushAudioRequestStart(
+            start_marker = audio2face_pb2.PushAudioRequestStart(
                 samplerate=samplerate,
                 instance_name=instance_name,
                 block_until_playback_is_finished=block_until_playback_is_finished,
             )
             # At first, we send a message with start_marker
-            yield pya2f.PushAudioStreamRequest(start_marker=start_marker)
+            yield audio2face_pb2.PushAudioStreamRequest(start_marker=start_marker)
             # Then we send messages with audio_data
             for i in range(len(audio_data) // chunk_size + 1):
                 time.sleep(sleep_between_chunks)
                 chunk = audio_data[i * chunk_size : i * chunk_size + chunk_size]
-                yield pya2f.PushAudioStreamRequest(
+                yield audio2face_pb2.PushAudioStreamRequest(
                     audio_data=chunk.astype(np.float32).tobytes()
                 )
 

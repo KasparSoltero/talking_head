@@ -5,6 +5,7 @@ from ..components import (
     TextToSpeech,
     Memory,
     AudioPlayer,
+    Audio2FaceController,
 )
 
 
@@ -15,6 +16,7 @@ class HeadController:
         self.text_processor = TextProcessor()
         self.memory = Memory()
         self.audio_player = AudioPlayer()
+        self.audio2face = Audio2FaceController()
 
     def update(self):
         print(".", end="")
@@ -27,5 +29,7 @@ class HeadController:
                 print(f"Response: {response}")
 
                 self.memory.head_said(response)
-                audio_buf = self.text_to_speech.convert(response)
-                self.audio_player.play(audio_buf)
+                audio_stream = self.text_to_speech.convert(response)
+                # self.audio2face.play_animation_from_audio(audio_buf)
+                self.audio2face.play_animation_from_audio_stream(audio_stream)
+                # self.audio_player.play(audio_buf)
