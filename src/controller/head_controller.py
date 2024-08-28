@@ -1,3 +1,5 @@
+import io
+from typing import Iterator
 from ..components import (
     AudioCapture,
     SpeechToText,
@@ -30,6 +32,20 @@ class HeadController:
 
                 self.memory.head_said(response)
                 audio_stream = self.text_to_speech.convert(response)
-                # self.audio2face.play_animation_from_audio(audio_buf)
-                self.audio2face.play_animation_from_audio_stream(audio_stream)
+                self.audio2face.play_animation_from_audio(
+                    consume_byte_iterator(audio_stream)
+                )
+                # self.audio2face.play_animation_from_audio_stream(audio_stream)
                 # self.audio_player.play(audio_buf)
+
+
+def consume_byte_iterator(byte_iterator: Iterator[bytes]) -> io.BytesIO:
+    audio_data = io.BytesIO()
+    # Write the audio data to the BytesIO object
+    for chunk in byte_iterator:
+        if chunk:
+            audio_data.write(chunk)
+    # Seek to the beginning of the BytesIO object
+    audio_data.seek(0)
+
+    return audio_data

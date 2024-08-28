@@ -6,6 +6,7 @@ import py_audio2face as pya2f
 import numpy as np
 
 from src.components import audio2face_pb2, audio2face_pb2_grpc
+from src.components.text_to_speech import SAMPLERATE
 
 
 # PORT = 12031
@@ -38,7 +39,7 @@ class Audio2FaceController:
         push_audio_track_stream(
             "localhost:50051",
             audio_stream,
-            44100,
+            SAMPLERATE,
             # "/World/audio2face/receive_audio_stream",
             "/World/audio2face/PlayerStreaming",
         )
