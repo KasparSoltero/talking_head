@@ -8,6 +8,7 @@ from ..components import (
     Memory,
     AudioPlayer,
     Audio2FaceController,
+    AudioToUnrealMovement,
 )
 
 
@@ -19,9 +20,10 @@ class HeadController:
         self.memory = Memory()
         self.audio_player = AudioPlayer()
         self.audio2face = Audio2FaceController()
+        self.audio_to_unreal_movement = AudioToUnrealMovement()
 
     def update(self):
-        print(".", end="")
+        print("...", end="\r\r\r")
         texts_since_last_update = self.audio_capture.update()
         if texts_since_last_update:
             self.memory.user_said(texts_since_last_update)
@@ -32,11 +34,15 @@ class HeadController:
 
                 self.memory.head_said(response)
                 audio_stream = self.text_to_speech.convert(response)
-                self.audio2face.play_animation_from_audio(
-                    consume_byte_iterator(audio_stream)
-                )
+                # self.audio2face.play_animation_from_audio(
+                #     consume_byte_iterator(audio_stream)
+                # )
                 # self.audio2face.play_animation_from_audio_stream(audio_stream)
                 # self.audio_player.play(audio_buf)
+                self.audio_to_unreal_movement.convert(audio_stream)
+                self.audio_capture.dont_listen = True
+                self.audio_player.play(consume_byte_iterator(audio_stream))
+                self.audio_capture.dont_listen = False
 
 
 def consume_byte_iterator(byte_iterator: Iterator[bytes]) -> io.BytesIO:

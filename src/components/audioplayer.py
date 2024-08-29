@@ -5,6 +5,7 @@ import pygame
 class AudioPlayer:
 
     def play(self, audio_data: BytesIO):
+        print(f"Playing audio")
         # Load the audio data into a Sound object
         audio_data.seek(0)
         sound = pygame.mixer.Sound(audio_data)

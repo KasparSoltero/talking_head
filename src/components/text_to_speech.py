@@ -8,7 +8,8 @@ from elevenlabs.client import ElevenLabs
 
 from google.cloud import texttospeech
 
-SAMPLERATE = 24000
+# SAMPLERATE = 24000 # pcm
+SAMPLERATE = 44100  # mp3
 
 
 class TextToSpeech:
@@ -36,8 +37,8 @@ class TextToSpeech:
             # voice_id="cwdmeUHVFO9BmZhUar4w",
             voice_id="EiNlNiXeDU1pqqOPrYMO",
             optimize_streaming_latency="0",
-            # output_format=f"mp3_{SAMPLERATE}_32",
-            output_format=f"pcm_{SAMPLERATE}",
+            output_format=f"mp3_{SAMPLERATE}_32",
+            # output_format=f"pcm_{SAMPLERATE}",
             text=text,
             model_id="eleven_multilingual_v2",
             voice_settings=VoiceSettings(

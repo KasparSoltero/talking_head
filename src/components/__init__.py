@@ -5,3 +5,4 @@ from .text_to_speech import TextToSpeech
 from .memory import Memory
 from .audioplayer import AudioPlayer
 from .audio2face import Audio2FaceController
+from .audio_to_unreal_movement import AudioToUnrealMovement

@@ -67,7 +67,8 @@ def push_audio_track(url, audio_data: bytes, samplerate, instance_name):
     with grpc.insecure_channel(url) as channel:
         stub = audio2face_pb2_grpc.Audio2FaceStub(channel)
         request = audio2face_pb2.PushAudioRequest()
-        request.audio_data = audio_data
+        request.audio_data = audio_data[: len(audio_data) - (len(audio_data) % 4)]
+        request.audio_data = np.frombuffer(audio_data, dtype=np.float32).tobytes()
         request.samplerate = samplerate
         request.instance_name = instance_name
         request.block_until_playback_is_finished = block_until_playback_is_finished
