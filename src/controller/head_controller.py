@@ -23,7 +23,7 @@ class HeadController:
         self.audio_to_unreal_movement = AudioToUnrealMovement()
 
     def update(self):
-        print("...", end="\r\r\r")
+        print("....", end="\r\r\r")
         texts_since_last_update = self.audio_capture.update()
         if texts_since_last_update:
             self.memory.user_said(texts_since_last_update)
