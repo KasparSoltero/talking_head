@@ -14,3 +14,6 @@ class Memory:
             return self.conversation_history[-1]["role"]
         else:
             return None
+        
+    def clear(self):
+        self.conversation_history = []

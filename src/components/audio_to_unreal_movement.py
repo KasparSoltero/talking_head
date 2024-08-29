@@ -27,7 +27,7 @@ class AudioToUnrealMovement:
 
     def convert(self, audio_stream):
         if not self.connection:
-            print("No connection")
+            print("No connection to unreal")
             return
 
         mouth_shape = self._calculate_mouth_shape(audio_stream)
