@@ -15,7 +15,6 @@ from ..components import (
     AudioToUnrealMovement,
 )
 
-
 class HeadController:
     def __init__(self):
         self.text_to_speech = TextToSpeech()
