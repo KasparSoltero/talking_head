@@ -5,3 +5,4 @@ anthropic
 google-cloud-speech
 dotenv
 py_audio2face[streaming]
+pydub
