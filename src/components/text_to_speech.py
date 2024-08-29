@@ -8,6 +8,9 @@ from elevenlabs.client import ElevenLabs
 
 from google.cloud import texttospeech
 
+# SAMPLERATE = 24000 # pcm
+SAMPLERATE = 44100  # mp3
+
 
 class TextToSpeech:
     def __init__(self):
@@ -30,11 +33,12 @@ class TextToSpeech:
         pygame.mixer.init()
 
     def convert(self, text):
-        response = self.client.text_to_speech.convert(
+        return self.client.text_to_speech.convert(
             # voice_id="cwdmeUHVFO9BmZhUar4w",
             voice_id="EiNlNiXeDU1pqqOPrYMO",
             optimize_streaming_latency="0",
-            output_format="mp3_22050_32",
+            output_format=f"mp3_{SAMPLERATE}_32",
+            # output_format=f"pcm_{SAMPLERATE}",
             text=text,
             model_id="eleven_multilingual_v2",
             voice_settings=VoiceSettings(
@@ -45,15 +49,15 @@ class TextToSpeech:
             ),
         )
 
-        audio_data = io.BytesIO()
-        # Write the audio data to the BytesIO object
-        for chunk in response:
-            if chunk:
-                audio_data.write(chunk)
-        # Seek to the beginning of the BytesIO object
-        audio_data.seek(0)
+        # audio_data = io.BytesIO()
+        # # Write the audio data to the BytesIO object
+        # for chunk in response:
+        #     if chunk:
+        #         audio_data.write(chunk)
+        # # Seek to the beginning of the BytesIO object
+        # audio_data.seek(0)
 
-        return audio_data
+        # return audio_data
 
     def convert_google_tts(self, text):
         ssml_text = f"""

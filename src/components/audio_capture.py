@@ -33,19 +33,22 @@ class AudioCapture:
 
         self.speech_to_text = SpeechToText()
         self.text_history = ""
+        self.dont_listen = False
 
     # this controls how the audio thread captures audio data, starts recording at threshold volume, cuts recording at either max time or silence
     def audio_callback(self, in_data, frame_count, time_info, status):
+
         audio_data = np.frombuffer(in_data, dtype=np.int16)
         current_time = time.time()
 
-        if np.abs(audio_data).mean() > self.threshold:
-            self.last_sound_time = current_time
-            if not self.is_recording:
-                self.start_recording()
-            self.frames.append(audio_data)
-        elif self.is_recording:
-            self.frames.append(audio_data)
+        if not self.dont_listen:
+            if np.abs(audio_data).mean() > self.threshold:
+                self.last_sound_time = current_time
+                if not self.is_recording:
+                    self.start_recording()
+                self.frames.append(audio_data)
+            elif self.is_recording:
+                self.frames.append(audio_data)
 
         if self.is_recording:
             duration = current_time - self.recording_start_time
@@ -73,9 +76,9 @@ class AudioCapture:
                 print(f"Recording duration: {duration:.2f}s, getting text...")
                 text = self.speech_to_text.convert(self.audio_data.tobytes())
                 print(f"Recognized: {text}")
-                if self.text_history is not "":
+                if self.text_history and isinstance(text, str):
                     self.text_history += ", " + text
-                elif text:
+                elif text and isinstance(text, str):
                     self.text_history = text
 
         else:
@@ -84,7 +87,7 @@ class AudioCapture:
         self.frames = []
 
     def update(self):
-        if self.text_history is not "":
+        if isinstance(self.text_history, str) and self.text_history:
             data = self.text_history
             self.text_history = ""
             return data
