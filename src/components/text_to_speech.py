@@ -9,7 +9,7 @@ from elevenlabs.client import ElevenLabs
 from google.cloud import texttospeech
 
 # SAMPLERATE = 24000 # pcm
-SAMPLERATE = 44100  # mp3
+SAMPLERATE = 44100  # mp3 # if changed also change in audio_to_unreal_movement.py
 
 
 class TextToSpeech:
@@ -34,15 +34,17 @@ class TextToSpeech:
 
     def convert(self, text):
         return self.client.text_to_speech.convert(
-            # voice_id="cwdmeUHVFO9BmZhUar4w",
-            voice_id="EiNlNiXeDU1pqqOPrYMO",
+            # voice_id="cwdmeUHVFO9BmZhUar4w",  # koro, turn up stability+maybe style
+            # voice_id="EiNlNiXeDU1pqqOPrYMO",  # old man ent
+            voice_id="Iyszx1P9YiAMRTe9n86r",  # amrita
+            # voice_id="7NsaqHdLuKNFvEfjpUno",  # morganna
             optimize_streaming_latency="0",
             output_format=f"mp3_{SAMPLERATE}_32",
             # output_format=f"pcm_{SAMPLERATE}",
             text=text,
             model_id="eleven_multilingual_v2",
             voice_settings=VoiceSettings(
-                stability=0.1,
+                stability=0.2,
                 similarity_boost=0.2,
                 style=0.0,
                 use_speaker_boost=True,
