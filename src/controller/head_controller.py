@@ -3,7 +3,8 @@ from typing import Iterator
 import time
 import os
 import random
-from pydub import AudioSegment
+
+# from pydub import AudioSegment
 from ..components import (
     AudioCapture,
     SpeechToText,
@@ -26,7 +27,10 @@ class HeadController:
         self.audio_to_unreal_movement = AudioToUnrealMovement()
 
         self.last_update_time = time.time()
-        self.default_sentences_dir = "src/data/example_sentences"
+        # self.default_sentences_dir = "src/data/example_sentences"
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        src_dir = os.path.dirname(current_dir)
+        self.default_sentences_dir = os.path.join(src_dir, "data", "example_sentences")
 
     def update(self):
         print("....", end="\r\r\r")
@@ -47,35 +51,30 @@ class HeadController:
                 # )
                 # self.audio2face.play_animation_from_audio_stream(audio_stream)
                 # self.audio_player.play(audio_buf)
-                self.audio_to_unreal_movement.convert(audio_stream)
+                self.audio_to_unreal_movement.process_audio_stream(audio_stream)
                 self.audio_capture.dont_listen = True
                 self.audio_player.play(consume_byte_iterator(audio_stream))
                 self.audio_capture.dont_listen = False
 
-        elif current_time - self.last_update_time > 30:
+        elif current_time - self.last_update_time > 15:
             print("No user input for 30 seconds. Playing default sentence.")
             self.memory.clear()
             self.play_default_sentence()
             self.last_update_time = current_time
 
     def play_default_sentence(self):
-        default_files = [f for f in os.listdir(self.default_sentences_dir) if f.endswith('.mp3')]
+        default_files = [
+            f for f in os.listdir(self.default_sentences_dir) if f.endswith(".mp3")
+        ]
         if default_files:
             random_file = random.choice(default_files)
             file_path = os.path.join(self.default_sentences_dir, random_file)
-            # Load the MP3 and convert it to WAV
-            audio = AudioSegment.from_mp3(file_path)
-            audio = audio.set_frame_rate(44100).set_channels(1)  # Adjust as needed
-            
-            # Convert to BytesIO
-            buffer = io.BytesIO()
-            audio.export(buffer, format="wav")
-            buffer.seek(0)
-            
-            print(f"Playing default sentence: {random_file}")
-            self.audio_to_unreal_movement.convert(buffer)
+            print(f'Playing default sentence: "{file_path}"')
+
+            audio_stream = self.audio_player.get_stream_from_mp3(file_path)
+            self.audio_to_unreal_movement.process_audio_stream(audio_stream)
             self.audio_capture.dont_listen = True
-            self.audio_player.play(buffer)
+            self.audio_player.play(consume_byte_iterator(audio_stream))
             self.audio_capture.dont_listen = False
 
 

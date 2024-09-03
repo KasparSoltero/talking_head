@@ -2,6 +2,7 @@ import os
 from google.cloud import speech
 from dotenv import load_dotenv
 
+
 class SpeechToText:
     def __init__(self):
         load_dotenv()  # Load api key (google_speech_to_text_service.json) from .env file
@@ -11,7 +12,7 @@ class SpeechToText:
             sample_rate_hertz=44100,
             language_code="en-US",
         )
-# hello
+
     def convert(self, audio_data):
         # Configure the audio settings
         audio = speech.RecognitionAudio(content=audio_data)
