@@ -6,3 +6,5 @@ docs/talking_head_overview.drawio
 # td specific
 Backup/
 *.*.toe
+
+.DS_Store
