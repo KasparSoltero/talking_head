@@ -1,6 +1,7 @@
 import os
 from google.cloud import speech
 from dotenv import load_dotenv
+import concurrent.futures
 
 
 class SpeechToText:
@@ -14,8 +15,19 @@ class SpeechToText:
         )
 
     def convert(self, audio_data):
-        # Configure the audio settings
+
         audio = speech.RecognitionAudio(content=audio_data)
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(self._recognize, audio)
+            try:
+                return future.result(timeout=180)  # 3 minute timeout
+            except concurrent.futures.TimeoutError:
+                print(f"timeout error converting speech to text")
+                return None
+
+    def _recognize(self, audio):
+        # Configure the audio settings
 
         # Perform the speech recognition
         response = self.client.recognize(config=self.config, audio=audio)

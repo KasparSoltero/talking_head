@@ -11,8 +11,11 @@ from google.cloud import texttospeech
 # SAMPLERATE = 24000 # pcm
 SAMPLERATE = 44100  # mp3 # if changed also change in audio_to_unreal_movement.py
 
+
 class TextToSpeech:
-    def __init__(self, voice_idx=0, regenerate_defaults=False):
+    def __init__(
+        self, voice_idx=0, regenerate_defaults=False, regenerate_waiting=False
+    ):
         load_dotenv()
         elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
         self.client = ElevenLabs(api_key=elevenlabs_api_key)
@@ -32,6 +35,9 @@ class TextToSpeech:
 
         if regenerate_defaults:
             self.regenerate_defaults()
+
+        if regenerate_waiting:
+            self.regenerate_waiting()
 
         ## google tts init
         # self.client = texttospeech.TextToSpeechClient()
@@ -61,7 +67,31 @@ class TextToSpeech:
                 use_speaker_boost=True,
             ),
         )
-    
+
+    def regenerate_waiting(self):
+        files = [f for f in os.listdir("src/data/waiting_sounds") if f.endswith(".mp3")]
+        for f in files:
+            os.remove(f"src/data/waiting_sounds/{f}")
+        texts = ["Ahh - hmm - ohh - mmm", "Hmm. Ahh, ohh", "Well hmmm... Ahh, ohh."]
+        print(f"Regenerating {len(texts)} waiting audio files...")
+        for text in texts:
+            response = self.convert(text)
+            # Create a BytesIO object to store the audio data
+            audio_data = io.BytesIO()
+            # Write the audio data to the BytesIO object
+            for chunk in response:
+                if chunk:
+                    audio_data.write(chunk)
+            # Save the audio data as an MP3 file
+            # check how many mp3 files are in the directory
+            mp3_files = [
+                f for f in os.listdir("src/data/waiting_sounds") if f.endswith(".mp3")
+            ]
+            output_filename = f"src/data/waiting_sounds/output_{len(mp3_files)}.mp3"
+            with open(output_filename, "wb") as f:
+                f.write(audio_data.getvalue())
+            print(f"Audio saved as {output_filename}")
+
     def regenerate_defaults(self):
         # clear directory
         files = [
@@ -69,7 +99,7 @@ class TextToSpeech:
         ]
         for f in files:
             os.remove(f"src/data/example_sentences/{f}")
-        
+
         # generate new defaults
         texts = [
             "In the dance of existence, stillness is the most profound movement.",
@@ -107,7 +137,7 @@ class TextToSpeech:
             "Empty your cup of preconceptions, and the tea of existence will fill it anew.",
             "In the balance of growth and decay, the sage finds the middle way through the forest.",
         ]
-        print(f'Regenerating {len(texts)} default audio files...')
+        print(f"Regenerating {len(texts)} default audio files...")
         for text in texts:
             response = self.convert(text)
             # Create a BytesIO object to store the audio data
@@ -119,7 +149,9 @@ class TextToSpeech:
             # Save the audio data as an MP3 file
             # check how many mp3 files are in the directory
             mp3_files = [
-                f for f in os.listdir("src/data/example_sentences") if f.endswith(".mp3")
+                f
+                for f in os.listdir("src/data/example_sentences")
+                if f.endswith(".mp3")
             ]
             output_filename = f"src/data/example_sentences/output_{len(mp3_files)}.mp3"
             with open(output_filename, "wb") as f:

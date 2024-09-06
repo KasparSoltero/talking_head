@@ -35,7 +35,7 @@ texts = [
     "In the dance of existence, stillness is the most profound movement.",
     "Time is but a river, and we are both the water and the shore.",
     "The universe is a symphony of vibrating strings.",
-    "The key to all myteries lies in the question you dare not ask.",
+    "The key to all mysteries lies in the question you dare not ask.",
     "The whispers of awakening buds carry ancient secrets on the breeze.",
     "In the dance of new leaves, winter's slumber finds its end.",
     "As the earth awakens, so too does the spirit of the land.",
@@ -66,6 +66,11 @@ texts = [
     "The path of least resistance carves canyons. Yield to find strength.",
     "Empty your cup of preconceptions, and the tea of existence will fill it anew.",
     "In the balance of growth and decay, the sage finds the middle way through the forest.",
+    "You there! Yes, you! The universe has a message for you. Are you listening?",
+    "What truths do you seek, wanderer?",
+    "The stars whisper secrets to those who dare to listen.",
+    "Over here, I have something you may wish to know",
+    "What is it you wish to know?",
 ]
 for text in texts:
     response = convert(text)

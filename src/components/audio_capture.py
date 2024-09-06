@@ -7,8 +7,15 @@ import time
 
 
 class AudioCapture:
-    def __init__(self, min_length=2, max_length=10, threshold=1000, crickets_duration=2):
+    def __init__(
+        self,
+        min_length=2,
+        max_length=10,
+        threshold=1000,
+        crickets_duration=2,
+    ):
         self.dont_listen = False
+        self.dont_speak = False
         self.threshold = threshold
         self.chunk_size = 1024
         self.sample_rate = 44100
@@ -28,8 +35,10 @@ class AudioCapture:
         self.audio_data = None
         self.last_sound_time = 0
         self.recording_start_time = 0
-        
-        self.silence_timeout = crickets_duration  # 1 second of silence to stop recording
+
+        self.silence_timeout = (
+            crickets_duration  # 1 second of silence to stop recording
+        )
         self.min_duration = min_length  # Minimum recording duration in seconds
         self.max_duration = max_length  # Maximum recording duration in seconds
 
@@ -62,12 +71,14 @@ class AudioCapture:
 
     def start_recording(self):
         print("\nstarted listening...")
+        self.dont_speak = True
         self.is_recording = True
         self.frames = []
         self.recording_start_time = time.time()
 
     def stop_recording(self):
         print("\nstopped listening")
+        self.dont_speak = False
         self.is_recording = False
         duration = time.time() - self.recording_start_time
         if duration >= self.min_duration:
@@ -81,7 +92,9 @@ class AudioCapture:
                     self.text_history = text
 
         else:
-            print(f"\nrecording duration ({duration:.2f}s) is below minimum, discarding")
+            print(
+                f"\nrecording duration ({duration:.2f}s) is below minimum, discarding"
+            )
             self.audio_data = None
         self.frames = []
 

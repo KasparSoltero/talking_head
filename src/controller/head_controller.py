@@ -6,6 +6,7 @@ import random
 import argparse
 import itertools
 import sys
+import threading
 
 # from pydub import AudioSegment
 from ..components import (
@@ -19,10 +20,15 @@ from ..components import (
     AudioToUnrealMovement,
 )
 
+
 class HeadController:
     def __init__(self):
         args = self.parse_args()
-        self.text_to_speech = TextToSpeech(voice_idx=args.voice, regenerate_defaults=args.regenerate_defaults)
+        self.text_to_speech = TextToSpeech(
+            voice_idx=args.voice,
+            regenerate_defaults=args.regenerate_defaults,
+            regenerate_waiting=args.regenerate_waiting,
+        )
         self.audio_capture = AudioCapture(
             min_length=args.listen_min_length,
             max_length=args.listen_max_length,
@@ -42,46 +48,96 @@ class HeadController:
         src_dir = os.path.dirname(current_dir)
         self.default_sentences_dir = os.path.join(src_dir, "data", "example_sentences")
 
-        self.spinner = itertools.cycle(['.   ', '..  ', '... ', '....'])
+        self.spinner = itertools.cycle([".   ", "..  ", "... ", "...."])
 
     def parse_args(self):
         parser = argparse.ArgumentParser(description="talking head description")
-        parser.add_argument('--listen_threshold', type=int, default=600,
-                            help='Set the listen threshold value (default: 600)')
-        parser.add_argument('--listen_max_length', type=int, default=20,
-                            help='Set the listen max length listening value (default: 20)')
-        parser.add_argument('--listen_min_length', type=int, default=3,
-                            help='Set the listen min length listening value (default: 2)')
-        parser.add_argument('--listen_crickets_duration', type=int, default=2,
-                            help='Set the listen crickets duration value (default: 2)')
-        parser.add_argument('--memory_length', type=int, default=4,
-                            help='Set the memory length (default: 4)')
-        parser.add_argument('--default_time', type=int, default=30,
-                            help='Set the default sentence timeout (default: 30)')
-        parser.add_argument('--voice', type=int, default=0,
-                            help='Set the voice index (default: 0)')
-        parser.add_argument('--deaf', type=bool, default=False,
-                            help='Set the deaf mode (default: False)')
-        parser.add_argument('--mute', type=bool, default=False,
-                            help='Set the mute mode (default: False)')
-        parser.add_argument('--speed', type=float, default=1.0,
-                            help='Set the speed of the audio (default: 1.0)')
-        parser.add_argument('--regenerate_defaults', type=bool, default=False,
-                            help='Set the regenerate defaults mode (default: False)')
+        parser.add_argument(
+            "--listen_threshold",
+            type=int,
+            default=100,
+            help="Set the listen threshold value (default: 600)",
+        )
+        parser.add_argument(
+            "--listen_max_length",
+            type=int,
+            default=20,
+            help="Set the listen max length listening value (default: 20)",
+        )
+        parser.add_argument(
+            "--listen_min_length",
+            type=int,
+            default=1,
+            help="Set the listen min length listening value (default: 2)",
+        )
+        parser.add_argument(
+            "--listen_crickets_duration",
+            type=int,
+            default=2,
+            help="Set the listen crickets duration value (default: 2)",
+        )
+        parser.add_argument(
+            "--memory_length",
+            type=int,
+            default=6,
+            help="Set the memory length (default: 4)",
+        )
+        parser.add_argument(
+            "--default_time",
+            type=int,
+            default=120,
+            help="Set the default sentence timeout (default: 30)",
+        )
+        parser.add_argument(
+            "--voice", type=int, default=0, help="Set the voice index (default: 0)"
+        )
+        parser.add_argument(
+            "--deaf",
+            type=bool,
+            default=False,
+            help="Set the deaf mode (default: False)",
+        )
+        parser.add_argument(
+            "--mute",
+            type=bool,
+            default=False,
+            help="Set the mute mode (default: False)",
+        )
+        parser.add_argument(
+            "--speed",
+            type=float,
+            default=0.8,
+            help="Set the speed of the audio (default: 1.0)",
+        )
+        parser.add_argument(
+            "--regenerate_defaults",
+            type=bool,
+            default=False,
+            help="Set the regenerate defaults mode (default: False)",
+        )
+        parser.add_argument(
+            "--regenerate_waiting",
+            type=bool,
+            default=False,
+            help="Set the regenerate waiting mode (default: False)",
+        )
         args = parser.parse_args()
         return args
 
     def update(self):
-        sys.stdout.write('\rWaiting for input' + next(self.spinner))
-        
+        sys.stdout.write("\rWaiting for input" + next(self.spinner))
+
         # get the latest audio data from the microphone (captured in internal thread)
         if not self.is_deaf:
             texts_since_last_update = self.audio_capture.update()
         else:
             texts_since_last_update = []
-        
+
         if texts_since_last_update:
             self.last_update_time = time.time()
+
+            # threading.Thread(target=self.audio_player.waiting).start()
+
             self.memory.user_said(texts_since_last_update)
 
             response = self.text_processor.process(self.memory.conversation_history)
@@ -89,13 +145,14 @@ class HeadController:
                 self.memory.head_said(response)
                 audio_stream = self.text_to_speech.convert(response)
                 audio_data = consume_byte_iterator(audio_stream)
-                
-                if not self.is_mute:
+
+                # end waiting thread
+                self.audio_player.stop = True
+                if (not self.is_mute) and (not self.audio_capture.dont_speak):
                     self.audio_capture.dont_listen = True
                     self.audio_player.play(audio_data)
                     self.last_update_time = time.time()
                     self.audio_capture.dont_listen = False
-
         elif time.time() - self.last_update_time > self.play_default_sentence_timeout:
             self.memory.clear()
             self.play_default_sentence()
@@ -108,10 +165,12 @@ class HeadController:
         if default_files:
             random_file = random.choice(default_files)
             file_path = os.path.join(self.default_sentences_dir, random_file)
-            print(f"Nothing heard for {self.play_default_sentence_timeout} seconds. Choosing {random_file}")
+            print(
+                f"Nothing heard for {self.play_default_sentence_timeout} seconds. Choosing {random_file}"
+            )
             audio_data = self.audio_player.get_audio_data_from_mp3(file_path)
 
-            if not self.is_mute:
+            if (not self.is_mute) and (not self.audio_capture.dont_speak):
                 self.audio_capture.dont_listen = True
                 self.audio_player.play(audio_data)
                 self.audio_capture.dont_listen = False
